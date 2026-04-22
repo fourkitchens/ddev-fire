@@ -61,6 +61,37 @@ fire::run_in_dir() {
   )
 }
 
+fire::container_app_root() {
+  printf '%s\n' "/var/www/html"
+}
+
+fire::container_path() {
+  local host_path="$1"
+  local app_root relative_path
+  app_root="$(fire::app_root)"
+
+  case "${host_path}" in
+    "${app_root}")
+      fire::container_app_root
+      ;;
+    "${app_root}"/*)
+      relative_path="${host_path#${app_root}/}"
+      printf '%s/%s\n' "$(fire::container_app_root)" "${relative_path}"
+      ;;
+    *)
+      fire::fail "Path is outside the project root and cannot be mapped into the DDEV container: ${host_path}"
+      ;;
+  esac
+}
+
+fire::run_in_container_dir() {
+  local dir="$1"
+  local command="$2"
+  local container_dir
+  container_dir="$(fire::container_path "${dir}")"
+  fire::run ddev exec bash -lc "cd $(printf '%q' "${container_dir}") && ${command}"
+}
+
 fire::require_command() {
   command -v "$1" >/dev/null 2>&1 || fire::fail "Required command not found: $1"
 }
@@ -122,38 +153,27 @@ fire::theme_path() {
   fire::fail "Unable to auto-detect a single custom theme. Set FIRE_THEME_NAME in .ddev/fire/config.env."
 }
 
-fire::setup_nvm() {
-  if [[ -n "${NVM_DIR:-}" && -f "${NVM_DIR}/nvm.sh" ]]; then
-    # shellcheck disable=SC1090
-    source "${NVM_DIR}/nvm.sh"
-    return 0
+fire::npm_command() {
+  local dir="$1"
+  local command="$2"
+
+  if [[ -f "${dir}/.nvmrc" ]]; then
+    fire::run_in_container_dir "${dir}" "if command -v nvm >/dev/null 2>&1; then nvm install && ${command}; else printf 'Error: nvm is required in the DDEV web container for %s because .nvmrc is present. Install ddev/ddev-nvm or configure nodejs_version.\\n' $(printf '%q' "${dir}") >&2; exit 1; fi"
+    return
   fi
-  if [[ -f "${HOME}/.nvm/nvm.sh" ]]; then
-    export NVM_DIR="${HOME}/.nvm"
-    # shellcheck disable=SC1090
-    source "${NVM_DIR}/nvm.sh"
-    return 0
-  fi
-  return 1
+
+  fire::run_in_container_dir "${dir}" "${command}"
 }
 
 fire::npm_ci() {
   local dir="$1"
-  if [[ -f "${dir}/.nvmrc" ]] && fire::setup_nvm; then
-    fire::run_in_dir "${dir}" bash -lc 'nvm install && npm ci'
-    return
-  fi
-  fire::run_in_dir "${dir}" npm ci
+  fire::npm_command "${dir}" "npm ci"
 }
 
 fire::npm_script() {
   local dir="$1"
   local script="$2"
-  if [[ -f "${dir}/.nvmrc" ]] && fire::setup_nvm; then
-    fire::run_in_dir "${dir}" bash -lc "nvm install && npm ci && npm run $(printf '%q' "${script}")"
-    return
-  fi
-  fire::run_in_dir "${dir}" bash -lc "npm ci && npm run $(printf '%q' "${script}")"
+  fire::npm_command "${dir}" "npm ci && npm run $(printf '%q' "${script}")"
 }
 
 fire::frontend_install() {
@@ -250,6 +270,10 @@ fire::pull_db() {
   fire::ensure_reference_dir
   reference_dir="$(fire::reference_dir)"
   dump_file="${reference_dir}/site-db.sql.gz"
+
+  if [[ -f "${dump_file}" ]]; then
+    fire::run rm -f "${dump_file}"
+  fi
 
   case "${FIRE_REMOTE_PLATFORM}" in
     pantheon)

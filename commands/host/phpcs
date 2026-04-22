@@ -5,7 +5,7 @@
 ## Usage: phpcs
 ## Example: "ddev phpcs --bootstrap"
 ## Aliases: lint-php
-## ProjectTypes: drupal
+## ProjectTypes: drupal, drupal10, drupal11
 ## MutagenSync: true
 ## Flags: [{"Name":"bootstrap","Usage":"Install drupal/coder if needed and create phpcs.xml if it is missing"}]
 

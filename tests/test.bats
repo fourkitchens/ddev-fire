@@ -60,6 +60,13 @@ make_fake_ddev() {
   cat > "${TESTDIR}/bin/ddev" <<EOF
 #!/usr/bin/env bash
 printf '%s\n' "ddev \$*" >> "${TESTDIR}/fake.log"
+if [[ "\$1" == "exec" && "\${2:-}" == "node" && "\${3:-}" == "--version" ]]; then
+  printf '%s\n' "\${FAKE_DDEV_NODE_VERSION:-v18.20.0}"
+  exit 0
+fi
+if [[ "\$1" == "exec" ]]; then
+  exit 0
+fi
 if [[ "\$1" == "xdebug" && "\${2:-}" == "on" ]]; then
   exit 0
 fi
@@ -117,6 +124,11 @@ EOF
   [ "$status" -eq 0 ]
 }
 
+@test "install declares ddev-nvm as a dependency" {
+  run grep '^  - ddev/ddev-nvm$' "${DIR}/install.yaml"
+  [ "$status" -eq 0 ]
+}
+
 @test "register help for public commands" {
   cd "${TESTDIR}"
   ddev add-on get "${DIR}" >/dev/null
@@ -142,6 +154,26 @@ EOF
   run run_host_command pull-db --dry-run
   [[ "$output" == *"terminus backup:get example-site.live --element=db"* ]]
   [[ "$output" == *"reference/site-db.sql.gz"* ]]
+}
+
+@test "pull-db download-only removes existing dump before pantheon download" {
+  cd "${TESTDIR}"
+  ddev add-on get "${DIR}" >/dev/null
+  ddev restart >/dev/null
+  mkdir -p reference
+  printf 'stale dump\n' > reference/site-db.sql.gz
+  cat > .ddev/fire/config.env <<'EOF'
+FIRE_REMOTE_PLATFORM="pantheon"
+FIRE_REMOTE_SITE_NAME="example-site"
+FIRE_REMOTE_CANONICAL_ENV="live"
+EOF
+  make_fake_bin terminus
+
+  run run_host_command pull-db --download-only
+  [ "$status" -eq 0 ]
+  [ ! -f reference/site-db.sql.gz ]
+  run grep -q 'terminus backup:get example-site.live --element=db --to=.*reference/site-db.sql.gz' "${TESTDIR}/fake.log"
+  [ "$status" -eq 0 ]
 }
 
 @test "pull-files dry-run prints pantheon file sync commands" {
@@ -177,20 +209,20 @@ EOF
   ddev add-on get "${DIR}" >/dev/null
   ddev restart >/dev/null
   mkdir -p web/themes/custom/mytheme
+  cat > package.json <<'EOF'
+{"name":"app","dependencies":{"left-pad":"1.3.0"}}
+EOF
+  printf '18\n' > .nvmrc
   cat > web/themes/custom/mytheme/package.json <<'EOF'
 {"name":"theme","scripts":{"build":"echo build","watch":"echo watch"}}
 EOF
+  printf '18\n' > web/themes/custom/mytheme/.nvmrc
   cat > .ddev/fire/config.env <<'EOF'
 FIRE_THEME_NAME="mytheme"
 FIRE_THEME_BUILD_SCRIPT="build"
 FIRE_THEME_WATCH_SCRIPT="watch"
 EOF
   make_fake_ddev
-  cat > "${TESTDIR}/bin/npm" <<'EOF'
-#!/usr/bin/env bash
-exit 0
-EOF
-  chmod +x "${TESTDIR}/bin/npm"
 
   run run_host_command site-build --skip-db-import
   [ "$status" -eq 0 ]
@@ -198,6 +230,10 @@ EOF
   [ "$status" -ne 0 ]
   run grep -q 'ddev mysql' "${TESTDIR}/fake.log"
   [ "$status" -ne 0 ]
+  run grep -q 'ddev exec bash -lc .*nvm install && npm ci' "${TESTDIR}/fake.log"
+  [ "$status" -eq 0 ]
+  run grep -q 'ddev exec bash -lc .*npm run build' "${TESTDIR}/fake.log"
+  [ "$status" -eq 0 ]
 }
 
 @test "site-build skip-db-download reuses reference dump" {
@@ -215,11 +251,6 @@ FIRE_THEME_BUILD_SCRIPT="build"
 FIRE_THEME_WATCH_SCRIPT="watch"
 EOF
   make_fake_ddev
-  cat > "${TESTDIR}/bin/npm" <<'EOF'
-#!/usr/bin/env bash
-exit 0
-EOF
-  chmod +x "${TESTDIR}/bin/npm"
 
   run run_host_command site-build --skip-db-download
   [ "$status" -eq 0 ]

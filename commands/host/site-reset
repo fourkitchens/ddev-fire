@@ -4,7 +4,7 @@
 ## Description: Recreate the DDEV project and rebuild the Drupal site
 ## Usage: site-reset
 ## Example: "ddev site-reset --yes --skip-db-download"
-## ProjectTypes: drupal
+## ProjectTypes: drupal, drupal10, drupal11
 ## MutagenSync: true
 ## Flags: [{"Name":"yes","Shorthand":"y","Usage":"Run without confirmation"},{"Name":"skip-db-import","Usage":"Skip importing the local database"},{"Name":"skip-db-download","Usage":"Skip downloading the database archive and reuse reference/site-db.sql.gz"},{"Name":"with-files","Usage":"Pull files after the database steps"}]
 

@@ -5,7 +5,7 @@
 ## Usage: pull-files
 ## Example: "ddev pull-files --reuse-archive"
 ## Aliases: files-pull
-## ProjectTypes: drupal
+## ProjectTypes: drupal, drupal10, drupal11
 ## MutagenSync: true
 ## Flags: [{"Name":"reuse-archive","Usage":"Reuse reference/site-files.tar.gz instead of downloading it again"},{"Name":"dry-run","Usage":"Print the commands that would run without executing them"}]
 

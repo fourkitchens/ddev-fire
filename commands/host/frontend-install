@@ -4,7 +4,7 @@
 ## Description: Install root frontend dependencies with npm ci
 ## Usage: frontend-install
 ## Example: "ddev frontend-install"
-## ProjectTypes: drupal
+## ProjectTypes: drupal, drupal10, drupal11
 ## MutagenSync: true
 
 set -euo pipefail

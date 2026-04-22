@@ -5,7 +5,7 @@
 ## Usage: remote-uli <env>
 ## Example: "ddev remote-uli pr-123 --dry-run"
 ## Aliases: puli
-## ProjectTypes: drupal
+## ProjectTypes: drupal, drupal10, drupal11
 ## Flags: [{"Name":"dry-run","Usage":"Print the command that would run without executing it"}]
 
 set -euo pipefail

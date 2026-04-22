@@ -4,7 +4,7 @@
 ## Description: Write a VS Code Xdebug launch config and enable DDEV Xdebug
 ## Usage: vscode-xdebug
 ## Example: "ddev vscode-xdebug --force"
-## ProjectTypes: drupal
+## ProjectTypes: drupal, drupal10, drupal11
 ## MutagenSync: true
 ## Flags: [{"Name":"force","Usage":"Overwrite an existing .vscode/launch.json file"}]
 

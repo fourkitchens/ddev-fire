@@ -5,7 +5,7 @@
 ## Usage: import-db-reference
 ## Example: "ddev import-db-reference"
 ## Aliases: fire-import-db
-## ProjectTypes: drupal
+## ProjectTypes: drupal, drupal10, drupal11
 ## MutagenSync: true
 
 set -euo pipefail

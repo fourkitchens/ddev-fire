@@ -4,7 +4,7 @@
 ## Description: Build the local Drupal site using DDEV workflows
 ## Usage: site-build
 ## Example: "ddev site-build --with-files"
-## ProjectTypes: drupal
+## ProjectTypes: drupal, drupal10, drupal11
 ## MutagenSync: true
 ## Flags: [{"Name":"skip-db-import","Usage":"Skip importing the local database"},{"Name":"skip-db-download","Usage":"Skip downloading the database archive and reuse reference/site-db.sql.gz"},{"Name":"with-files","Usage":"Pull files after the database steps"}]
 

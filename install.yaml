@@ -1,5 +1,8 @@
 name: fire
 
+dependencies:
+  - ddev/ddev-nvm
+
 project_files:
   - commands/host
   - fire/scripts

@@ -5,7 +5,7 @@
 ## Usage: pull-db
 ## Example: "ddev pull-db --dry-run"
 ## Aliases: db-pull
-## ProjectTypes: drupal
+## ProjectTypes: drupal, drupal10, drupal11
 ## MutagenSync: true
 ## Flags: [{"Name":"download-only","Usage":"Download the archive but do not import it"},{"Name":"dry-run","Usage":"Print the commands that would run without executing them"}]
 

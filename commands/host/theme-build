@@ -4,7 +4,7 @@
 ## Description: Build the custom Drupal theme
 ## Usage: theme-build
 ## Example: "ddev theme-build"
-## ProjectTypes: drupal
+## ProjectTypes: drupal, drupal10, drupal11
 ## MutagenSync: true
 
 set -euo pipefail
