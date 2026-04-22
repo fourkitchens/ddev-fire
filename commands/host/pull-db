@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#ddev-generated
+
+## Description: Download the remote database into reference/site-db.sql.gz and optionally import it
+## Usage: pull-db
+## Example: "ddev pull-db --dry-run"
+## Aliases: db-pull
+## ProjectTypes: drupal
+## MutagenSync: true
+## Flags: [{"Name":"download-only","Usage":"Download the archive but do not import it"},{"Name":"dry-run","Usage":"Print the commands that would run without executing them"}]
+
+set -euo pipefail
+
+source "${DDEV_APPROOT}/.ddev/fire/scripts/lib.sh"
+fire::load_config
+
+download_only=0
+dry_run=0
+
+for arg in "$@"; do
+  case "${arg}" in
+    --download-only) download_only=1 ;;
+    --dry-run) dry_run=1 ;;
+    *)
+      fire::fail "Unknown argument: ${arg}"
+      ;;
+  esac
+done
+
+export FIRE_DRY_RUN="${dry_run}"
+fire::pull_db "${download_only}"

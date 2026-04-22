@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#ddev-generated
+
+## Description: Install root frontend dependencies with npm ci
+## Usage: frontend-install
+## Example: "ddev frontend-install"
+## ProjectTypes: drupal
+## MutagenSync: true
+
+set -euo pipefail
+
+source "${DDEV_APPROOT}/.ddev/fire/scripts/lib.sh"
+fire::load_config
+fire::frontend_install

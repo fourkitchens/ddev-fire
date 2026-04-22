@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#ddev-generated
+
+## Description: Import reference/site-db.sql.gz into the local database without prompts
+## Usage: import-db-reference
+## Example: "ddev import-db-reference"
+## Aliases: fire-import-db
+## ProjectTypes: drupal
+## MutagenSync: true
+
+set -euo pipefail
+
+if [[ "$#" -gt 0 ]]; then
+  printf 'Error: ddev import-db-reference does not accept a path. It always imports from reference/site-db.sql.gz.\n' >&2
+  exit 1
+fi
+
+source "${DDEV_APPROOT}/.ddev/fire/scripts/lib.sh"
+fire::load_config
+fire::import_reference_db

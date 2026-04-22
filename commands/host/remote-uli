@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+#ddev-generated
+
+## Description: Generate a remote one-time Drupal login link
+## Usage: remote-uli <env>
+## Example: "ddev remote-uli pr-123 --dry-run"
+## Aliases: puli
+## ProjectTypes: drupal
+## Flags: [{"Name":"dry-run","Usage":"Print the command that would run without executing it"}]
+
+set -euo pipefail
+
+source "${DDEV_APPROOT}/.ddev/fire/scripts/lib.sh"
+fire::load_config
+
+dry_run=0
+remote_env=""
+
+for arg in "$@"; do
+  case "${arg}" in
+    --dry-run) dry_run=1 ;;
+    *)
+      if [[ -z "${remote_env}" ]]; then
+        remote_env="${arg}"
+      else
+        fire::fail "Unexpected argument: ${arg}"
+      fi
+      ;;
+  esac
+done
+
+export FIRE_DRY_RUN="${dry_run}"
+fire::remote_uli "${remote_env}"

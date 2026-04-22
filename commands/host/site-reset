@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+#ddev-generated
+
+## Description: Recreate the DDEV project and rebuild the Drupal site
+## Usage: site-reset
+## Example: "ddev site-reset --yes --skip-db-download"
+## ProjectTypes: drupal
+## MutagenSync: true
+## Flags: [{"Name":"yes","Shorthand":"y","Usage":"Run without confirmation"},{"Name":"skip-db-import","Usage":"Skip importing the local database"},{"Name":"skip-db-download","Usage":"Skip downloading the database archive and reuse reference/site-db.sql.gz"},{"Name":"with-files","Usage":"Pull files after the database steps"}]
+
+set -euo pipefail
+
+source "${DDEV_APPROOT}/.ddev/fire/scripts/lib.sh"
+fire::load_config
+
+assume_yes=0
+skip_db_import=0
+skip_db_download=0
+with_files=0
+
+for arg in "$@"; do
+  case "${arg}" in
+    --yes|-y) assume_yes=1 ;;
+    --skip-db-import) skip_db_import=1 ;;
+    --skip-db-download) skip_db_download=1 ;;
+    --with-files) with_files=1 ;;
+    *)
+      fire::fail "Unknown argument: ${arg}"
+      ;;
+  esac
+done
+
+if [[ "${assume_yes}" != "1" ]]; then
+  printf 'This will destroy the local DDEV environment and rebuild it from scratch. Continue? [y/N] '
+  read -r answer
+  case "${answer}" in
+    y|Y|yes|YES) ;;
+    *) exit 0 ;;
+  esac
+fi
+
+fire::run ddev poweroff
+fire::run ddev delete -Oy
+fire::run ddev start
+fire::site_build "${skip_db_import}" "${skip_db_download}" "${with_files}"
+fire::run ddev drush uli

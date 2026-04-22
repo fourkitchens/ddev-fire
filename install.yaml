@@ -1,0 +1,11 @@
+name: fire
+
+project_files:
+  - commands/host
+  - fire/scripts
+
+post_install_actions:
+  - |
+    <?php
+    #ddev-description: Initialize ddev-fire project configuration
+    require 'fire/scripts/install.php';

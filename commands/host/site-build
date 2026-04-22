@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#ddev-generated
+
+## Description: Build the local Drupal site using DDEV workflows
+## Usage: site-build
+## Example: "ddev site-build --with-files"
+## ProjectTypes: drupal
+## MutagenSync: true
+## Flags: [{"Name":"skip-db-import","Usage":"Skip importing the local database"},{"Name":"skip-db-download","Usage":"Skip downloading the database archive and reuse reference/site-db.sql.gz"},{"Name":"with-files","Usage":"Pull files after the database steps"}]
+
+set -euo pipefail
+
+source "${DDEV_APPROOT}/.ddev/fire/scripts/lib.sh"
+fire::load_config
+
+skip_db_import=0
+skip_db_download=0
+with_files=0
+
+for arg in "$@"; do
+  case "${arg}" in
+    --skip-db-import) skip_db_import=1 ;;
+    --skip-db-download) skip_db_download=1 ;;
+    --with-files) with_files=1 ;;
+    *)
+      fire::fail "Unknown argument: ${arg}"
+      ;;
+  esac
+done
+
+fire::site_build "${skip_db_import}" "${skip_db_download}" "${with_files}"

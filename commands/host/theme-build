@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#ddev-generated
+
+## Description: Build the custom Drupal theme
+## Usage: theme-build
+## Example: "ddev theme-build"
+## ProjectTypes: drupal
+## MutagenSync: true
+
+set -euo pipefail
+
+source "${DDEV_APPROOT}/.ddev/fire/scripts/lib.sh"
+fire::load_config
+fire::theme_build

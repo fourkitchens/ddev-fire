@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#ddev-generated
+
+## Description: Write a VS Code Xdebug launch config and enable DDEV Xdebug
+## Usage: vscode-xdebug
+## Example: "ddev vscode-xdebug --force"
+## ProjectTypes: drupal
+## MutagenSync: true
+## Flags: [{"Name":"force","Usage":"Overwrite an existing .vscode/launch.json file"}]
+
+set -euo pipefail
+
+source "${DDEV_APPROOT}/.ddev/fire/scripts/lib.sh"
+fire::load_config
+
+force=0
+
+for arg in "$@"; do
+  case "${arg}" in
+    --force) force=1 ;;
+    *)
+      fire::fail "Unknown argument: ${arg}"
+      ;;
+  esac
+done
+
+fire::vscode_xdebug "${force}"

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#ddev-generated
+
+## Description: Run the configured theme watch script
+## Usage: theme-watch
+## Example: "ddev theme-watch"
+## ProjectTypes: drupal
+## MutagenSync: true
+
+set -euo pipefail
+
+source "${DDEV_APPROOT}/.ddev/fire/scripts/lib.sh"
+fire::load_config
+fire::theme_watch

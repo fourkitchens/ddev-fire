@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#ddev-generated
+
+## Description: Run PHP_CodeSniffer against the Drupal project
+## Usage: phpcs
+## Example: "ddev phpcs --bootstrap"
+## Aliases: lint-php
+## ProjectTypes: drupal
+## MutagenSync: true
+## Flags: [{"Name":"bootstrap","Usage":"Install drupal/coder if needed and create phpcs.xml if it is missing"}]
+
+set -euo pipefail
+
+source "${DDEV_APPROOT}/.ddev/fire/scripts/lib.sh"
+fire::load_config
+
+bootstrap=0
+
+for arg in "$@"; do
+  case "${arg}" in
+    --bootstrap) bootstrap=1 ;;
+    *)
+      fire::fail "Unknown argument: ${arg}"
+      ;;
+  esac
+done
+
+fire::phpcs "${bootstrap}"
