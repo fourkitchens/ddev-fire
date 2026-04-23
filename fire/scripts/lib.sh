@@ -142,15 +142,20 @@ fire::theme_path() {
   first_theme=""
   while IFS= read -r theme_dir; do
     theme_count=$((theme_count + 1))
-    first_theme="${theme_dir}"
+    if [[ -z "${first_theme}" ]]; then
+      first_theme="${theme_dir}"
+    fi
   done < <(find "${theme_base}" -mindepth 1 -maxdepth 1 -type d ! -name '.*' | sort)
 
-  if [[ "${theme_count}" -eq 1 ]]; then
+  if [[ "${theme_count}" -ge 1 ]]; then
+    if [[ "${theme_count}" -gt 1 ]]; then
+      fire::info "Multiple custom themes found under ${theme_base}; using ${first_theme}. Set FIRE_THEME_NAME to override."
+    fi
     printf '%s\n' "${first_theme}"
     return
   fi
 
-  fire::fail "Unable to auto-detect a single custom theme. Set FIRE_THEME_NAME in .ddev/fire/config.env."
+  fire::fail "Unable to auto-detect a custom theme under ${theme_base}. Set FIRE_THEME_NAME in .ddev/fire/config.env."
 }
 
 fire::npm_command() {

@@ -35,6 +35,8 @@ FIRE_REMOTE_SITE_NAME=""
 FIRE_REMOTE_CANONICAL_ENV="live"
 ```
 
+`FIRE_THEME_NAME` is optional. If it is unset, `ddev-fire` auto-detects a theme from `web/themes/custom`: it uses the only theme when one exists, or the first sorted theme when multiple exist.
+
 On first install:
 
 - If `fire.yml` or `fire.local.yml` exists, supported values are imported into `.ddev/fire/config.env`.
